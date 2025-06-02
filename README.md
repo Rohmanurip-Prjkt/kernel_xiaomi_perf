@@ -7,7 +7,7 @@ Custom kernel for POCO F4 (munch) focused on **root hiding** and stability. Base
 - **Root Hiding**: Special optimizations to hide root access from banking apps and games
 - **High Stability**: Based on proven stable N0Kernel
 - **Optimal Performance**: Optimized for gaming and daily usage
-- **Additional Featre**: DC Dimming, BBRv3, and Bypass Charging
+- **Additional Features**: DC Dimming, BBRv3, and Bypass Charging
 - **Multiple Variants**: 3 variants available to suit your needs
 - **Wide ROM Compatibility**: Works on AOSP, MIUI/HyperOS, and AOSP with IR from LOS
 - **Smart Installation**: Auto-detects ROM type or allows manual selection
