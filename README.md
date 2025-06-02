@@ -1,4 +1,4 @@
-# N0kontzzz Kernel for POCO F4 (munch)
+# N0Kontzzz Kernel for POCO F4 (munch)
 
 Custom kernel for POCO F4 (munch) focused on **root hiding** and stability. Based on N0Kernel by EmanuelCN & its fork by Impqxr with additional features.
 
