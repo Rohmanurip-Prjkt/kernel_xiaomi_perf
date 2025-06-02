@@ -1,12 +1,11 @@
 # N0kontzzz Kernel for POCO F4 (munch)
 
-Custom kernel for POCO F4 (munch) focused on **root hiding** and stability. Based on N0Kernel by EmanuelCN & its fork by Impqxr with various optimizations and additional features.
+Custom kernel for POCO F4 (munch) focused on **root hiding** and stability. Based on N0Kernel by EmanuelCN & its fork by Impqxr with additional features.
 
 ## 🚀 Key Features
 
-- **Root Hiding**: Special optimizations to hide root access from banking apps and games
+- **Root Hiding**: Special optimizations to hide root access from apps
 - **High Stability**: Based on proven stable N0Kernel
-- **Optimal Performance**: Optimized for gaming and daily usage
 - **Additional Features**: DC Dimming, BBRv3, and Bypass Charging
 - **Multiple Variants**: 3 variants available to suit your needs
 - **Wide ROM Compatibility**: Works on AOSP, MIUI/HyperOS, and AOSP with IR from LOS
