@@ -78,6 +78,7 @@ You flash this kernel at your own risk. Make sure to create a stock kernel backu
 - **@simonpunk & @sidex15**: SUSFS
 - **@Impqxr**: N0Kernel fork & help
 - **@osm0sis**: AnyKernel3 framework
+- **Kernel developers**: Cherry-picked commits
 - **Google**: Clang compiler
 - **All testers and contributors**: For their valuable feedback and support
 
