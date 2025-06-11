@@ -475,7 +475,7 @@ jobs:
           
           - **No KernelSU Next**: This is the standard kernel without KernelSU Next if you're not using KernelSU Next and using Magisk, for instance
           - **KernelSU Next**: Kernel with KernelSU Next integration
-          - **KernelSU Next with SuSFS**: Kernel with KernelSU Next and SuSFS support"
+          - **KernelSU Next with SUSFS**: Kernel with KernelSU Next and SUSFS support"
           else
             SELECTED_VARIANT="${{ github.event.inputs.KERNEL_VARIANT }}"
 
@@ -519,11 +519,11 @@ jobs:
           If using ADB sideload, you'll be prompted to select using volume buttons.
           
           ## Credits
-          - **EmanuelCN**: N0Kernel development
-          - **rifsxd**: KernelSU-Next
-          - **simonpunk**: SUSFS
-          - **Impqxr**: N0Kernel fork & help
-          - **osm0sis**: AnyKernel3 framework
+          - **@EmanuelCN**: N0Kernel development
+          - **@rifsxd**: KernelSU-Next
+          - **@simonpunk & @sidex15**: SUSFS
+          - **@Impqxr**: N0Kernel fork & help
+          - **@osm0sis**: AnyKernel3 framework
           - **Google**: Clang compiler
           - **All testers and contributors**: For their valuable feedback and support
           EOF
