@@ -9,7 +9,7 @@ on:
         options:
           - "No KernelSU"
           - "KernelSU-Next Only"
-          - "KernelSU-Next with SuSFS"
+          - "KernelSU-Next with SUSFS"
           - "Build All Variants"
           - "Custom Configuration"
         default: "Build All Variants"
@@ -99,7 +99,7 @@ jobs:
             ksu_name: "KSUN"
             ksu_setup_url: "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/refs/heads/next/kernel/setup.sh"
             ksu_setup_branch: "next"
-          - name: "KSUN-SuSFS"
+          - name: "KSUN-SUSFS"
             branch: "susfs-v1.5.5-munch"
             add_ksu: true
             ksu_name: "KSUN"
@@ -204,9 +204,9 @@ jobs:
             BASE_NAME="${BASE_NAME}-${{ matrix.variant.ksu_name }}"
           fi
           
-          # Add SuSFS to name if using SuSFS branch
+          # Add SUSFS to name if using SUSFS branch
           if [[ "${{ matrix.variant.branch }}" == *"susfs"* ]]; then
-            BASE_NAME="${BASE_NAME}-SuSFS"
+            BASE_NAME="${BASE_NAME}-SUSFS"
           fi
           
           # Add date-time
@@ -282,7 +282,7 @@ jobs:
             echo "ANYKERNEL_URL=https://github.com/bimoalfarrabi/AKmunch" >> $GITHUB_OUTPUT
             echo "ANYKERNEL_BRANCH=main" >> $GITHUB_OUTPUT
             echo "ANYKERNEL_ZIP_NAME=N0Kontzzz-munch" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.inputs.KERNEL_VARIANT }}" = "KernelSU-Next with SuSFS" ]; then
+          elif [ "${{ github.event.inputs.KERNEL_VARIANT }}" = "KernelSU-Next with SUSFS" ]; then
             echo "KERNEL_TREE=$KERNEL_REPO_URL" >> $GITHUB_OUTPUT
             echo "KERNEL_TREE_BRANCH=susfs-v1.5.5-munch" >> $GITHUB_OUTPUT
             echo "ADD_KERNELSU=true" >> $GITHUB_OUTPUT
@@ -395,9 +395,9 @@ jobs:
             BASE_NAME="${BASE_NAME}-${{ steps.kernel-config.outputs.KERNELSU_NAME }}"
           fi
           
-          # Add SuSFS to name if using SuSFS branch
+          # Add SUSFS to name if using SUSFS branch
           if [[ "${{ steps.kernel-config.outputs.KERNEL_TREE_BRANCH }}" == *"susfs"* ]]; then
-            BASE_NAME="${BASE_NAME}-SuSFS"
+            BASE_NAME="${BASE_NAME}-SUSFS"
           fi
           
           # Generate filename for unified package
