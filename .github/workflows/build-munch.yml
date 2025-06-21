@@ -5,7 +5,7 @@ on:
     inputs:
       KERNEL_TREE:
         description: "Kernel Tree URL"
-        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz"
+        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz/"
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
@@ -14,10 +14,6 @@ on:
       KERNELSU_SETUP_BRANCH:
         description: "KernelSU Branch"
         default: "next"
-        required: false
-      KERNELSU_PATCHES:
-        description: "KernelSU Patch URLs (comma-separated, leave blank to skip)"
-        default: ""
         required: false
       ANYKERNEL_URL:
         description: "AnyKernel URL (leave blank to disable)"
@@ -53,7 +49,6 @@ jobs:
           echo "Kernel Variant: ${{ matrix.variant }}"
           echo "KernelSU Setup URL: ${{ github.event.inputs.KERNELSU_SETUP_URL }}"
           echo "KernelSU Branch: ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}"
-          echo "KernelSU Patches: ${{ github.event.inputs.KERNELSU_PATCHES }}"
           echo "AnyKernel URL: ${{ github.event.inputs.ANYKERNEL_URL }}/tree/${{ github.event.inputs.ANYKERNEL_BRANCH }}"
           echo "AnyKernel Zip Name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}"
           echo "::endgroup::"
@@ -89,6 +84,16 @@ jobs:
           fi
           git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
 
+      - name: Set KernelSU Patch for SUSFS variant
+        id: patch
+        run: |
+          PATCH_URL="https://raw.githubusercontent.com/WildKernels/kernel_patches/refs/heads/main/next/0001-kernel-implement-susfs-v1.5.5-v1.5.7-KSUN-v1.0.8.patch"
+          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
+            echo "KSU_PATCHES=$PATCH_URL" >> $GITHUB_ENV
+          else
+            echo "KSU_PATCHES=" >> $GITHUB_ENV
+          fi
+
       - name: Building kernel
         run: |
           export ARCH=arm64
@@ -98,9 +103,9 @@ jobs:
 
           if [[ -n "${{ github.event.inputs.KERNELSU_SETUP_URL }}" && -n "${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" ]]; then
             curl -LSs "${{ github.event.inputs.KERNELSU_SETUP_URL }}" | bash -s ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}
-            if [ -n "${{ github.event.inputs.KERNELSU_PATCHES }}" ]; then
+            if [ -n "${KSU_PATCHES}" ]; then
               cd Kernel*
-              echo "${{ github.event.inputs.KERNELSU_PATCHES }}" | tr ',' '\n' | while read -r PATCH; do
+              echo "${KSU_PATCHES}" | tr ',' '\n' | while read -r PATCH; do
                 TRIMMED=$(echo "$PATCH" | xargs)
                 TEMP_PATCH_FILE="/tmp/downloaded_patch_$(date +%s%N).patch"
                 curl -fsSL "$TRIMMED" -o "$TEMP_PATCH_FILE"
