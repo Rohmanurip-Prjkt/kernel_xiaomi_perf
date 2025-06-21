@@ -150,8 +150,7 @@ jobs:
             cp -f dtbo.img AnyKernel3/
           fi
           cd AnyKernel3
-          zip -q -r "${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip" *
-          mv "${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip" ../
+          zip -q -r "../${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip" *
           cd ..
           cd ../../../../..
 
@@ -160,7 +159,7 @@ jobs:
         if: ${{ success() && github.event.inputs.ANYKERNEL_URL != '' && github.event.inputs.ANYKERNEL_BRANCH != '' && github.event.inputs.ANYKERNEL_ZIP_NAME != '' }}
         with:
           name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}
-          path: kernel_tree/out/arch/arm64/boot/AnyKernel3/${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip
+          path: kernel_tree/out/arch/arm64/boot/${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip
 
   release:
     needs: build
