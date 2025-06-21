@@ -3,17 +3,9 @@ name: Kernel Build (Munch)
 on:
   workflow_dispatch:
     inputs:
-      KERNEL_VARIANT:
-        description: "Build Variant (No-KSU, KSUN-Only, KSUN-SUSFS, Build All, Custom)"
-        default: "No-KSU"
-        required: true
       KERNEL_TREE:
         description: "Kernel Tree URL"
-        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz"
-        required: true
-      KERNEL_TREE_BRANCH:
-        description: "Kernel Tree Branch"
-        default: "base-munch"
+        default: "https://github.com/Impqxr/kernel_xiaomi_sm8250"
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
@@ -29,7 +21,7 @@ on:
         required: false
       ANYKERNEL_URL:
         description: "AnyKernel URL (leave blank to disable)"
-        default: "https://github.com/bimoalfarrabi/AKmunch"
+        default: "https://github.com/Impqxr/AKmunch"
         required: false
       ANYKERNEL_BRANCH:
         description: "AnyKernel Branch"
@@ -45,26 +37,11 @@ on:
         required: true
 
 jobs:
-  set-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      variants: ${{ steps.set-matrix.outputs.variants }}
-    steps:
-      - id: set-matrix
-        run: |
-          if [[ "${{ github.event.inputs.KERNEL_VARIANT }}" == "Build All" ]]; then
-            echo 'variants=["No-KSU","KSUN-Only","KSUN-SUSFS"]' >> $GITHUB_OUTPUT
-          else
-            echo "variants=[\"${{ github.event.inputs.KERNEL_VARIANT }}\"]" >> $GITHUB_OUTPUT
-          fi
-
   build:
-    needs: set-matrix
-    if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        variant: ${{fromJson(needs.set-matrix.outputs.variants)}}
+        variant: [No-KSU, KSUN-Only, KSUN-SUSFS]
       fail-fast: false
     env:
       KERNEL_VARIANT: ${{ matrix.variant }}
@@ -72,7 +49,7 @@ jobs:
       - name: Display Inputs
         run: |
           echo "::group::Inputs"
-          echo "Kernel Tree: ${{ github.event.inputs.KERNEL_TREE }}/tree/${{ github.event.inputs.KERNEL_TREE_BRANCH }}"
+          echo "Kernel Tree: ${{ github.event.inputs.KERNEL_TREE }}"
           echo "Kernel Variant: ${{ matrix.variant }}"
           echo "KernelSU Setup URL: ${{ github.event.inputs.KERNELSU_SETUP_URL }}"
           echo "KernelSU Branch: ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}"
@@ -103,9 +80,14 @@ jobs:
           cd ..
           rm clang.tar.gz
 
-      - name: Clone Kernel Source
+      - name: Clone Kernel Source (per-variant branch)
         run: |
-          git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "${{ github.event.inputs.KERNEL_TREE_BRANCH }}" kernel_tree
+          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
+            BRANCH="susfs-v1.5.5-munch"
+          else
+            BRANCH="base-munch"
+          fi
+          git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
 
       - name: KernelSU Setup & Patch (if enabled)
         if: ${{ github.event.inputs.KERNELSU_SETUP_URL != '' && github.event.inputs.KERNELSU_SETUP_BRANCH != '' }}
