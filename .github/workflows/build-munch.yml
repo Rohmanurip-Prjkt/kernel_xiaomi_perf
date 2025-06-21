@@ -21,7 +21,7 @@ on:
         required: false
       ANYKERNEL_URL:
         description: "AnyKernel URL (leave blank to disable)"
-        default: "https://github.com/bimoalfarrabi/AKmunch"
+        default: "https://github.com/Impqxr/AKmunch"
         required: false
       ANYKERNEL_BRANCH:
         description: "AnyKernel Branch"
@@ -113,16 +113,8 @@ jobs:
           KERNEL_FOLDER=$(pwd)/kernel_tree
           TOOLS_FOLDER=$(pwd)/clang
           cd kernel_tree
-          # Use different defconfig or config based on variant
-          if [[ "${{ matrix.variant }}" == "No-KSU" ]]; then
-            DEFCONFIG=vendor/munch_defconfig
-          elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
-            DEFCONFIG=vendor/munch_ksu_defconfig
-          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
-            DEFCONFIG=vendor/munch_ksu_susfs_defconfig
-          else
-            DEFCONFIG=vendor/munch_defconfig
-          fi
+          # All variants use the same defconfig
+          DEFCONFIG=vendor/munch_defconfig
           make O=out $DEFCONFIG PATH="$TOOLS_FOLDER/bin:$PATH"
           make O=out CC=clang -j$(nproc --all) PATH="$TOOLS_FOLDER/bin:$PATH" CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1
           cd ..
