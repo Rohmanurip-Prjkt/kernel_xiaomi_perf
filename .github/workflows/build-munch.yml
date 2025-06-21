@@ -21,7 +21,7 @@ on:
         required: false
       ANYKERNEL_URL:
         description: "AnyKernel URL (leave blank to disable)"
-        default: "https://github.com/Impqxr/AKmunch"
+        default: "https://github.com/bimoalfarrabi/AKmunch"
         required: false
       ANYKERNEL_BRANCH:
         description: "AnyKernel Branch"
@@ -89,35 +89,30 @@ jobs:
           fi
           git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
 
-      - name: KernelSU Setup & Patch (if enabled)
-        if: ${{ github.event.inputs.KERNELSU_SETUP_URL != '' && github.event.inputs.KERNELSU_SETUP_BRANCH != '' }}
-        run: |
-          cd kernel_tree
-          curl -LSs "${{ github.event.inputs.KERNELSU_SETUP_URL }}" | bash -s ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}
-          if [ -n "${{ github.event.inputs.KERNELSU_PATCHES }}" ]; then
-            echo "${{ github.event.inputs.KERNELSU_PATCHES }}" | tr ',' '\n' | while read -r PATCH; do
-              TRIMMED=$(echo "$PATCH" | xargs)
-              TEMP_PATCH_FILE="/tmp/downloaded_patch_$(date +%s%N).patch"
-              curl -fsSL "$TRIMMED" -o "$TEMP_PATCH_FILE"
-              patch -p1 < "$TEMP_PATCH_FILE"
-            done
-          fi
-          cd ..
-
-      - name: Build Kernel
+      - name: Building kernel
         run: |
           export ARCH=arm64
           export SUBARCH=ARM64
           export KBUILD_BUILD_USER="${{ github.actor }}"
           export KBUILD_BUILD_HOST="github.com"
-          KERNEL_FOLDER=$(pwd)/kernel_tree
-          TOOLS_FOLDER=$(pwd)/clang
-          cd kernel_tree
-          # All variants use the same defconfig
-          DEFCONFIG=vendor/munch_defconfig
-          make O=out $DEFCONFIG PATH="$TOOLS_FOLDER/bin:$PATH"
-          make O=out CC=clang -j$(nproc --all) PATH="$TOOLS_FOLDER/bin:$PATH" CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1
-          cd ..
+
+          if [[ -n "${{ github.event.inputs.KERNELSU_SETUP_URL }}" && -n "${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" ]]; then
+            curl -LSs "${{ github.event.inputs.KERNELSU_SETUP_URL }}" | bash -s ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}
+            if [ -n "${{ github.event.inputs.KERNELSU_PATCHES }}" ]; then
+              cd Kernel*
+              echo "${{ github.event.inputs.KERNELSU_PATCHES }}" | tr ',' '\n' | while read -r PATCH; do
+                TRIMMED=$(echo "$PATCH" | xargs)
+                TEMP_PATCH_FILE="/tmp/downloaded_patch_$(date +%s%N).patch"
+                curl -fsSL "$TRIMMED" -o "$TEMP_PATCH_FILE"
+                patch -p1 < "$TEMP_PATCH_FILE"
+              done
+              cd ..
+            fi
+          fi
+
+          make O=out vendor/munch_defconfig PATH="$(pwd)/../clang/bin:$PATH"
+          make O=out CC=clang -j$(nproc --all) PATH="$(pwd)/../clang/bin:$PATH" CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1
+        working-directory: kernel_tree
 
       - name: Upload Image.gz
         uses: actions/upload-artifact@v4
