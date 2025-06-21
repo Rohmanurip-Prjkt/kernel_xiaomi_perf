@@ -5,7 +5,7 @@ on:
     inputs:
       KERNEL_TREE:
         description: "Kernel Tree URL"
-        default: "https://github.com/Impqxr/kernel_xiaomi_sm8250"
+        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz"
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
