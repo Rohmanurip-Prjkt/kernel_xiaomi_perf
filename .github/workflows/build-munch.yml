@@ -5,7 +5,7 @@ on:
     inputs:
       KERNEL_TREE:
         description: "Kernel Tree URL"
-        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz/"
+        default: "https://github.com/bimoalfarrabi/kernel_xiaomi_sm8250_n0kontzz"
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
@@ -42,6 +42,12 @@ jobs:
     env:
       KERNEL_VARIANT: ${{ matrix.variant }}
     steps:
+      - name: Get current date and time (WIB)
+        id: datetime
+        run: |
+          echo "TIMESTAMP=$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')" >> $GITHUB_ENV
+          echo "HUMAN_DATE=$(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')" >> $GITHUB_ENV
+
       - name: Display Inputs
         run: |
           echo "::group::Inputs"
@@ -51,6 +57,7 @@ jobs:
           echo "KernelSU Branch: ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}"
           echo "AnyKernel URL: ${{ github.event.inputs.ANYKERNEL_URL }}/tree/${{ github.event.inputs.ANYKERNEL_BRANCH }}"
           echo "AnyKernel Zip Name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}"
+          echo "Timestamp: $TIMESTAMP"
           echo "::endgroup::"
 
       - name: Cache Clang
@@ -119,24 +126,6 @@ jobs:
           make O=out CC=clang -j$(nproc --all) PATH="$(pwd)/../clang/bin:$PATH" CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1
         working-directory: kernel_tree
 
-      - name: Upload Image.gz
-        uses: actions/upload-artifact@v4
-        with:
-          name: Image.gz-${{ matrix.variant }}
-          path: kernel_tree/out/arch/arm64/boot/Image.gz
-
-      - name: Upload dtb.img
-        uses: actions/upload-artifact@v4
-        with:
-          name: dtb.img-${{ matrix.variant }}
-          path: kernel_tree/out/arch/arm64/boot/dtb.img
-
-      - name: Upload dtbo.img
-        uses: actions/upload-artifact@v4
-        with:
-          name: dtbo.img-${{ matrix.variant }}
-          path: kernel_tree/out/arch/arm64/boot/dtbo.img
-
       - name: Package AnyKernel3 (if enabled)
         if: ${{ success() && github.event.inputs.ANYKERNEL_URL != '' && github.event.inputs.ANYKERNEL_BRANCH != '' && github.event.inputs.ANYKERNEL_ZIP_NAME != '' }}
         run: |
@@ -150,7 +139,7 @@ jobs:
             cp -f dtbo.img AnyKernel3/
           fi
           cd AnyKernel3
-          zip -q -r "../${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip" *
+          zip -q -r "../${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}.zip" *
           cd ..
           cd ../../../../..
 
@@ -158,8 +147,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ success() && github.event.inputs.ANYKERNEL_URL != '' && github.event.inputs.ANYKERNEL_BRANCH != '' && github.event.inputs.ANYKERNEL_ZIP_NAME != '' }}
         with:
-          name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}
-          path: kernel_tree/out/arch/arm64/boot/${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}.zip
+          name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}
+          path: kernel_tree/out/arch/arm64/boot/${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}.zip
 
   release:
     needs: build
@@ -178,7 +167,8 @@ jobs:
         run: |
           VARIANTS_TEXT=""
           for f in release-artifacts/*.zip; do
-            VARIANT=$(basename "$f" | sed -E 's/.*-([^-]+)\.zip/\1/')
+            # Extract variant name from filename: N0Kontzzz-munch-<variant>-YYYYMMDD-HHMM.zip
+            VARIANT=$(basename "$f" | sed -E 's/.*-([^-]+)-[0-9]{8}-[0-9]{4}\.zip/\1/')
             VARIANTS_TEXT="${VARIANTS_TEXT}- ${VARIANT}\n"
           done
           echo "VARIANTS_TEXT<<EOF" >> $GITHUB_OUTPUT
@@ -188,7 +178,7 @@ jobs:
       - name: Prepare Release Tag
         id: prepare
         run: |
-          TAG="auto-release-$(date +'%Y%m%d-%H%M')"
+          TAG="auto-release-$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')"
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes
@@ -196,7 +186,7 @@ jobs:
           cat > release_notes.md << EOF
           # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }})
 
-          Build Date: $(date '+%Y-%m-%d %H:%M')
+          Build Date: $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')
 
           ## Kernel Variants
           ${{ steps.variants.outputs.VARIANTS_TEXT }}
