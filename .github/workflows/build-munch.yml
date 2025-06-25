@@ -167,8 +167,8 @@ jobs:
         run: |
           VARIANTS_TEXT=""
           for f in release-artifacts/*.zip; do
-            # Extract variant name from filename: N0Kontzzz-munch-<variant>-YYYYMMDD-HHMM.zip
-            VARIANT=$(basename "$f" | sed -E 's/.*-([^-]+)-[0-9]{8}-[0-9]{4}\.zip/\1/')
+            # Extract variant name: N0Kontzzz-munch-<variant>-YYYYMMDD-HHMM.zip
+            VARIANT=$(basename "$f" | sed -E 's/^.+-munch-(.+)-[0-9]{8}-[0-9]{4}\.zip$/\1/')
             VARIANTS_TEXT="${VARIANTS_TEXT}- ${VARIANT}\n"
           done
           echo "VARIANTS_TEXT<<EOF" >> $GITHUB_OUTPUT
