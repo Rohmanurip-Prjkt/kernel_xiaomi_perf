@@ -107,6 +107,7 @@ jobs:
           export SUBARCH=ARM64
           export KBUILD_BUILD_USER="${{ github.actor }}"
           export KBUILD_BUILD_HOST="github.com"
+          export TZ=Asia/Jakarta
 
           if [[ -n "${{ github.event.inputs.KERNELSU_SETUP_URL }}" && -n "${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" ]]; then
             curl -LSs "${{ github.event.inputs.KERNELSU_SETUP_URL }}" | bash -s ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}
