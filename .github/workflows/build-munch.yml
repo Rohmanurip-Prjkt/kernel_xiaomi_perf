@@ -86,19 +86,25 @@ jobs:
         run: |
           if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
             BRANCH="susfs-v1.5.5-munch"
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
+            BRANCH="base-munch"
           else
             BRANCH="base-munch"
           fi
           git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
 
-      - name: Set KernelSU Patch for SUSFS variant
-        id: patch
+      - name: Set KernelSU Environment Variables per Variant
         run: |
-          PATCH_URL="https://raw.githubusercontent.com/WildKernels/kernel_patches/refs/heads/main/next/0001-kernel-implement-susfs-v1.5.5-v1.5.7-KSUN-v1.0.8.patch"
           if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
-            echo "KSU_PATCHES=$PATCH_URL" >> $GITHUB_ENV
+            echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/refs/heads/next/kernel/setup.sh" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
+            echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           else
-            echo "KSU_PATCHES=" >> $GITHUB_ENV
+            echo "KERNELSU_NAME=" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=${{ github.event.inputs.KERNELSU_SETUP_URL }}" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" >> $GITHUB_ENV
+            echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           fi
 
       - name: Building kernel
@@ -109,11 +115,11 @@ jobs:
           export KBUILD_BUILD_HOST="github.com"
           export TZ=Asia/Jakarta
 
-          if [[ -n "${{ github.event.inputs.KERNELSU_SETUP_URL }}" && -n "${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" ]]; then
-            curl -LSs "${{ github.event.inputs.KERNELSU_SETUP_URL }}" | bash -s ${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}
-            if [ -n "${KSU_PATCHES}" ]; then
+          if [[ -n "$KERNELSU_SETUP_URL" && -n "$KERNELSU_SETUP_BRANCH" ]]; then
+            curl -LSs "$KERNELSU_SETUP_URL" | bash -s "$KERNELSU_SETUP_BRANCH"
+            if [ -n "$KERNELSU_PATCHES" ]; then
               cd Kernel*
-              echo "${KSU_PATCHES}" | tr ',' '\n' | while read -r PATCH; do
+              echo "$KERNELSU_PATCHES" | tr ',' '\n' | while read -r PATCH; do
                 TRIMMED=$(echo "$PATCH" | xargs)
                 TEMP_PATCH_FILE="/tmp/downloaded_patch_$(date +%s%N).patch"
                 curl -fsSL "$TRIMMED" -o "$TEMP_PATCH_FILE"
