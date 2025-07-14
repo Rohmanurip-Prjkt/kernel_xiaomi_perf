@@ -9,7 +9,7 @@ on:
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
-        default: "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/refs/heads/next/kernel/setup.sh"
+        default: "https://raw.githubusercontent.com/Impqxr/KernelSU-Next/refs/heads/next/kernel/setup.sh"
         required: false
       KERNELSU_SETUP_BRANCH:
         description: "KernelSU Branch"
