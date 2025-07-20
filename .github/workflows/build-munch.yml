@@ -9,7 +9,7 @@ on:
         required: true
       KERNELSU_SETUP_URL:
         description: "KernelSU setup.sh URL (leave blank to disable)"
-        default: "https://raw.githubusercontent.com/Impqxr/KernelSU-Next/refs/heads/next/kernel/setup.sh"
+        default: "https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next/kernel/setup.sh"
         required: false
       KERNELSU_SETUP_BRANCH:
         description: "KernelSU Branch"
@@ -97,7 +97,7 @@ jobs:
         run: |
           if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
             echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
-            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/refs/heads/next/kernel/setup.sh" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           else
