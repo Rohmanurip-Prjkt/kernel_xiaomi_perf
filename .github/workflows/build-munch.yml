@@ -100,12 +100,18 @@ jobs:
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next-susfs/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
+            echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=next" >> $GITHUB_ENV
+            echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           else
             echo "KERNELSU_NAME=" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=${{ github.event.inputs.KERNELSU_SETUP_URL }}" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           fi
+
 
       - name: Building kernel
         run: |
