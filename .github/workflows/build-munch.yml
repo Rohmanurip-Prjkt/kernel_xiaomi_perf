@@ -107,10 +107,11 @@ jobs:
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           else
             echo "KERNELSU_NAME=" >> $GITHUB_ENV
-            echo "KERNELSU_SETUP_URL=${{ github.event.inputs.KERNELSU_SETUP_URL }}" >> $GITHUB_ENV
-            echo "KERNELSU_SETUP_BRANCH=${{ github.event.inputs.KERNELSU_SETUP_BRANCH }}" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           fi
+
 
 
       - name: Building kernel
