@@ -32,9 +32,9 @@ This kernel is specifically designed for:
 - Better module management support
 
 ### 3. **KernelSU Next + SUSFS**
-- KernelSU Next with SUSFS (Super User File System)
+- KernelSU Next with SUSFS
 - Most advanced root hiding capabilities
-- Perfect for bypassing banking apps and anti-cheat games
+- Perfect for bypassing banking apps
 
 ## 🛠️ Installation
 
@@ -43,26 +43,6 @@ This kernel is specifically designed for:
 - Custom recovery (TWRP/OrangeFox) or fastboot
 - Compatible ROM: **AOSP, MIUI/HyperOS, or AOSP with IR from LineageOS**
 - Stock kernel backup (highly recommended)
-
-### Installation Methods
-
-#### Method 1: Auto-Detection via File Name
-The kernel will automatically detect your ROM type based on the filename:
-
-1. **For MIUI/HyperOS**: Rename the zip file to include `-miui` (e.g., `N0Kontzzz-v1.0-miui.zip`)
-2. **For AOSP with IR from LOS**: Rename the zip file to include `-ir` (e.g., `N0Kontzzz-v1.0-ir.zip`)
-3. **For Standard AOSP**: Use the original filename
-4. Flash via custom recovery as normal
-
-#### Method 2: Manual Selection (ADB Sideload or Unnamed Files)
-If using ADB sideload or the filename doesn't contain ROM identifiers:
-
-1. Boot to custom recovery
-2. Flash the kernel zip file
-3. **Use volume buttons to select your ROM type:**
-   - **Vol Down**: Navigate through options (miui → ir → default)
-   - **Vol Up**: Select current option
-4. The installer will show: `> Option selected: [ROM_TYPE] (Vol–=Next Vol+=Select)`
 
 ## ⚠️ Disclaimer
 
