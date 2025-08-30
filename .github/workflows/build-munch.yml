@@ -1,5 +1,4 @@
 name: Kernel Build (Munch)
-
 on:
   workflow_dispatch:
     inputs:
@@ -31,13 +30,12 @@ on:
         description: "Clang download URL"
         default: "https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz"
         required: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        variant: [No-KSU, KSUN-Only, KSUN-SUSFS]
+        variant: [No-KSU, KSUN-Only, KSUN-SUSFS, No-KSU-UV, KSUN-Only-UV, KSUN-SUSFS-UV]
       fail-fast: false
     env:
       KERNEL_VARIANT: ${{ matrix.variant }}
@@ -47,7 +45,6 @@ jobs:
         run: |
           echo "TIMESTAMP=$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')" >> $GITHUB_ENV
           echo "HUMAN_DATE=$(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')" >> $GITHUB_ENV
-
       - name: Display Inputs
         run: |
           echo "::group::Inputs"
@@ -59,7 +56,6 @@ jobs:
           echo "AnyKernel Zip Name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}"
           echo "Timestamp: $TIMESTAMP"
           echo "::endgroup::"
-
       - name: Cache Clang
         id: cache-clang
         uses: actions/cache@v4
@@ -68,7 +64,6 @@ jobs:
           key: clang-ci
           restore-keys: |
             clang-
-
       - name: Download and Extract Clang (if not cached)
         if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
@@ -81,18 +76,22 @@ jobs:
           fi
           cd ..
           rm clang.tar.gz
-
       - name: Clone Kernel Source (per-variant branch)
         run: |
           if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
             BRANCH="susfs-v1.5.5-munch"
           elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
             BRANCH="base-munch"
+          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV" ]]; then
+            BRANCH="susfs-v1.5.5-munch-uv"
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV" ]]; then
+            BRANCH="base-munch-uv"
+          elif [[ "${{ matrix.variant }}" == "No-KSU-UV" ]]; then
+            BRANCH="base-munch-uv"
           else
             BRANCH="base-munch"
           fi
           git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
-
       - name: Set KernelSU Environment Variables per Variant
         run: |
           if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
@@ -105,15 +104,22 @@ jobs:
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
+          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV" ]]; then
+            echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next-susfs/kernel/setup.sh" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
+            echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV" ]]; then
+            echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
+            echo "KERNELSU_SETUP_BRANCH=next" >> $GITHUB_ENV
+            echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           else
             echo "KERNELSU_NAME=" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
           fi
-
-
-
       - name: Building kernel
         run: |
           export ARCH=arm64
@@ -121,7 +127,6 @@ jobs:
           export KBUILD_BUILD_USER="${{ github.actor }}"
           export KBUILD_BUILD_HOST="github.com"
           export TZ=Asia/Jakarta
-
           if [[ -n "$KERNELSU_SETUP_URL" && -n "$KERNELSU_SETUP_BRANCH" ]]; then
             curl -LSs "$KERNELSU_SETUP_URL" | bash -s "$KERNELSU_SETUP_BRANCH"
             if [ -n "$KERNELSU_PATCHES" ]; then
@@ -135,11 +140,9 @@ jobs:
               cd ..
             fi
           fi
-
           make O=out vendor/munch_defconfig PATH="$(pwd)/../clang/bin:$PATH"
           make O=out CC=clang -j$(nproc --all) PATH="$(pwd)/../clang/bin:$PATH" CROSS_COMPILE=aarch64-linux-gnu- LLVM=1 LLVM_IAS=1
         working-directory: kernel_tree
-
       - name: Package AnyKernel3 (if enabled)
         if: ${{ success() && github.event.inputs.ANYKERNEL_URL != '' && github.event.inputs.ANYKERNEL_BRANCH != '' && github.event.inputs.ANYKERNEL_ZIP_NAME != '' }}
         run: |
@@ -156,14 +159,12 @@ jobs:
           zip -q -r "../${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}.zip" *
           cd ..
           cd ../../../../..
-
       - name: Upload AnyKernel3 zip
         uses: actions/upload-artifact@v4
         if: ${{ success() && github.event.inputs.ANYKERNEL_URL != '' && github.event.inputs.ANYKERNEL_BRANCH != '' && github.event.inputs.ANYKERNEL_ZIP_NAME != '' }}
         with:
           name: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}
           path: kernel_tree/out/arch/arm64/boot/${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-${{ matrix.variant }}-${{ env.TIMESTAMP }}.zip
-
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -175,49 +176,41 @@ jobs:
           pattern: ${{ github.event.inputs.ANYKERNEL_ZIP_NAME }}-*
           merge-multiple: true
           path: ./release-artifacts
-
       - name: Generate Variants Text
         id: variants
         run: |
           VARIANTS_TEXT=""
           for f in release-artifacts/*.zip; do
-            # Extract variant name: N0Kontzzz-munch-<variant>-YYYYMMDD-HHMM.zip
             VARIANT=$(basename "$f" | sed -E 's/^.+-munch-(.+)-[0-9]{8}-[0-9]{4}\.zip$/\1/')
             VARIANTS_TEXT="${VARIANTS_TEXT}- ${VARIANT}\n"
           done
           echo "VARIANTS_TEXT<<EOF" >> $GITHUB_OUTPUT
           echo -e "${VARIANTS_TEXT}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Prepare Release Tag
         id: prepare
         run: |
           TAG="auto-release-$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')"
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
-
       - name: Generate Release Notes
         run: |
           cat > release_notes.md << EOF
           # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }})
-
           Build Date: $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')
-
           ## Kernel Variants
           ${{ steps.variants.outputs.VARIANTS_TEXT }}
-
           ## Installation
           Flash via recovery or KernelFlasher app.
-
           ## Credits
           - **@EmanuelCN**: N0Kernel development
           - **@rifsxd**: KernelSU-Next
           - **@simonpunk & @sidex15**: SUSFS
           - **@Impqxr**: N0Kernel fork & help
+          - **@re-noroi**: UV commit
           - **@osm0sis**: AnyKernel3 framework
           - **Google**: Clang compiler
           - **All testers and contributors**: For their valuable feedback and support
           EOF
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
