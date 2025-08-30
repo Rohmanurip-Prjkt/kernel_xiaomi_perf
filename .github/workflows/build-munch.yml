@@ -204,6 +204,7 @@ jobs:
           ${{ steps.variants.outputs.VARIANTS_TEXT }}
 
           ## Changelogs
+          - placeholder
           
           ## Notes
           ### Notice on Bypass Charging Feature
@@ -220,7 +221,7 @@ jobs:
           - **@simonpunk & @sidex15**: SUSFS.
           - **@Impqxr**: N0Kernel fork & help.
           - **@re-noroi & @SenseiiX**: UV commit.
-          - **kvsnr113 & @SenseiiX**: Efficient cpu freq commit.
+          - **@kvsnr113 & @SenseiiX**: Efficient cpu freq commit.
           - **@osm0sis**: AnyKernel3 framework.
           - **Google**: Clang compiler.
           - **All testers and contributors**: For their valuable feedback and support.
