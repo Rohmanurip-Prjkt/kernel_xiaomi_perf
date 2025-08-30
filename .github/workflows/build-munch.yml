@@ -196,12 +196,12 @@ jobs:
       - name: Generate Release Notes
         run: |
           cat > release_notes.md << EOF
-          # N0Kontzzz for Munch (${ { steps.prepare.outputs.release_tag } })
+          # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }})
           
           Build Date: $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')
           
           ## Kernel Variants
-          ${ { steps.variants.outputs.VARIANTS_TEXT } }
+          ${{ steps.variants.outputs.VARIANTS_TEXT }}
 
           ## Changelogs
           
