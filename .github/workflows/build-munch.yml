@@ -194,23 +194,37 @@ jobs:
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
       - name: Generate Release Notes
         run: |
-          cat > release_notes.md << EOF
-          # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }})
+          cat > release_notes.md << 'EOF'
+          # N0Kontzzz for Munch (${ { steps.prepare.outputs.release_tag } })
+          
           Build Date: $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')
+          
           ## Kernel Variants
-          ${{ steps.variants.outputs.VARIANTS_TEXT }}
+          ${ { steps.variants.outputs.VARIANTS_TEXT } }
+
+          ## Changelogs
+          
+          ## Notes
+          ### Notice on Bypass Charging Feature
+          Due to the changes introduced in the commit **"drivers/power/supply: Checkout to LineageOS kernel"**, the **bypass charging feature can no longer be supported**. This is because the updated power supply driver structure—imported from LineageOS—has significant differences and is not directly compatible with the previous implementation required by the bypass charging commit. If you have a compatible implementation, feel free to PR.
+          
+          **If bypass charging is important to your workflow, you may consider using earlier releases (start from auto-release-20250814-1757 and earlier).**
+      
           ## Installation
           Flash via recovery or KernelFlasher app.
+          
           ## Credits
-          - **@EmanuelCN**: N0Kernel development
-          - **@rifsxd**: KernelSU-Next
-          - **@simonpunk & @sidex15**: SUSFS
-          - **@Impqxr**: N0Kernel fork & help
-          - **@re-noroi**: UV commit
-          - **@osm0sis**: AnyKernel3 framework
-          - **Google**: Clang compiler
-          - **All testers and contributors**: For their valuable feedback and support
+          - **@EmanuelCN**: N0Kernel development.
+          - **@rifsxd**: KernelSU-Next.
+          - **@simonpunk & @sidex15**: SUSFS.
+          - **@Impqxr**: N0Kernel fork & help.
+          - **@re-noroi & @SenseiiX**: UV commit.
+          - **kvsnr113 & @SenseiiX**: Efficient cpu freq commit.
+          - **@osm0sis**: AnyKernel3 framework.
+          - **Google**: Clang compiler.
+          - **All testers and contributors**: For their valuable feedback and support.
           EOF
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
