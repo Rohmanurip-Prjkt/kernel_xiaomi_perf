@@ -190,7 +190,7 @@ jobs:
       - name: Prepare Release Tag
         id: prepare
         run: |
-          TAG="auto-release-$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')"
+          TAG="auto-release-$(TZ='Asia/Jakarta' date +'%Y%m%d-%H%M')-(BPF)"
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
           
       - name: Generate Release Notes
@@ -230,7 +230,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.prepare.outputs.release_tag }}
-          name: "N0Kontzzz for Munch ${{ steps.prepare.outputs.release_tag }}"
+          name: "N0Kontzzz for Munch (BPF) ${{ steps.prepare.outputs.release_tag }}"
           body_path: release_notes.md
           files: |
             release-artifacts/*.zip
