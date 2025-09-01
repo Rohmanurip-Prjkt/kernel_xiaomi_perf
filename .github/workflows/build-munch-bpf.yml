@@ -78,15 +78,15 @@ jobs:
           rm clang.tar.gz
       - name: Clone Kernel Source (per-variant branch)
         run: |
-          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
+          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS-BPF" ]]; then
             BRANCH="susfs-v1.5.5-munch-bpf"
-          elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-BPF" ]]; then
             BRANCH="base-munch-bpf"
-          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV-BPF" ]]; then
             BRANCH="susfs-v1.5.5-munch-uv-bpf"
-          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV-BPF" ]]; then
             BRANCH="base-munch-uv-bpf"
-          elif [[ "${{ matrix.variant }}" == "No-KSU-UV" ]]; then
+          elif [[ "${{ matrix.variant }}" == "No-KSU-UV-BPF" ]]; then
             BRANCH="base-munch-uv-bpf"
           else
             BRANCH="base-munch-bpf"
@@ -94,22 +94,22 @@ jobs:
           git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "$BRANCH" kernel_tree
       - name: Set KernelSU Environment Variables per Variant
         run: |
-          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS" ]]; then
+          if [[ "${{ matrix.variant }}" == "KSUN-SUSFS-BPF" ]]; then
             echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next-susfs/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
-          elif [[ "${{ matrix.variant }}" == "KSUN-Only" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-BPF" ]]; then
             echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
-          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-SUSFS-UV-BPF" ]]; then
             echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/Impqxr/KernelSU-Next/next-susfs/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next-susfs" >> $GITHUB_ENV
             echo "KERNELSU_PATCHES=" >> $GITHUB_ENV
-          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV" ]]; then
+          elif [[ "${{ matrix.variant }}" == "KSUN-Only-UV-BPF" ]]; then
             echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_URL=https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" >> $GITHUB_ENV
             echo "KERNELSU_SETUP_BRANCH=next" >> $GITHUB_ENV
