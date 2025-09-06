@@ -168,13 +168,11 @@ jobs:
           ## Kernel Variants
           ${{ steps.variants.outputs.VARIANTS_TEXT }}
           ## Changelogs
-          - placeholder
+          - Introduced KGSL Skip Pool Zeroing.
 
           ## Notes
-          ### Notice on Bypass Charging Feature
-          Due to the changes introduced in the commit **"drivers/power/supply: Checkout to LineageOS kernel"**, the **bypass charging feature can no longer be supported**. This is because the updated power supply driver structure—imported from LineageOS—has significant differences and is not directly compatible with the previous implementation required by the bypass charging commit. If you have a compatible implementation, feel free to PR.
-
-          **If bypass charging is important to your workflow, you may consider using earlier releases (start from auto-release-20250814-1757 and earlier).**
+          - No bypass charging
+          - Introduced KGSL Skip Pool Zeroing, improves fps in emulator games by reducing kgsl memory pool operation. Can be toggled via /sys/kernel/e404/kgsl_skip_zeroing, 1 to enable, 0 to disable.
 
           ## Installation
           Flash via recovery or KernelFlasher app.
@@ -186,6 +184,7 @@ jobs:
           - **@Impqxr**: N0Kernel fork & help.
           - **@re-noroi & @SenseiiX**: UV commit.
           - **@kvsnr113 & @SenseiiX**: Efficient cpu freq commit.
+          - **@kvsnr113**: kgsl pool commit.
           - **@osm0sis**: AnyKernel3 framework.
           - **Google**: Clang compiler.
           - **All testers and contributors**: For their valuable feedback and support.
