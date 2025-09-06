@@ -78,7 +78,7 @@ jobs:
           rm clang.tar.gz
       - name: Clone Kernel Source (branch susfs-v1.5.5-uv-kgsl)
         run: |
-          git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "susfs-v1.5.5-uv-kgsl" kernel_tree
+          git clone --depth=1 "${{ github.event.inputs.KERNEL_TREE }}" -b "susfs-v1.5.5-munch-uv-kgsl" kernel_tree
       - name: Set KernelSU Environment Variables (default to inputs)
         run: |
           echo "KERNELSU_NAME=KSUN" >> $GITHUB_ENV
@@ -161,7 +161,7 @@ jobs:
       - name: Generate Release Notes
         run: |
           cat > release_notes.md << EOF
-          # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }})
+          # N0Kontzzz for Munch (${{ steps.prepare.outputs.release_tag }} KGSL)
 
           Build Date: $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M')
 
@@ -193,7 +193,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.prepare.outputs.release_tag }}
-          name: "N0Kontzzz for Munch ${{ steps.prepare.outputs.release_tag }}"
+          name: "N0Kontzzz for Munch ${{ steps.prepare.outputs.release_tag }} KGSL"
           body_path: release_notes.md
           files: |
             release-artifacts/*.zip
