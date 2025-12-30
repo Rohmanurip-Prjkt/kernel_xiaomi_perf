@@ -703,6 +703,7 @@ out_unlock:
 	spin_unlock(&files->file_lock);
 	*res = NULL;
 	return -ENOENT;
+}
 	/**
  * last_fd - return last valid index into fd table
  * @cur_fds: files struct
